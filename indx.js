@@ -1,3 +1,5 @@
+//ДЗ УРОК 1 НОД JS
+
 var colors = require('colors')
 
 const numbers = process.argv.slice(2)

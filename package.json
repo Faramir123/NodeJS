@@ -1,7 +1,6 @@
 {
-  "name": "hw5",
+  "name": "lesson6",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -9,7 +8,8 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "description": "",
   "dependencies": {
-    "colors": "^1.4.0"
+    "socket.io": "^4.4.0"
   }
 }

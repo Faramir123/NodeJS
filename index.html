@@ -2,11 +2,67 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>DIRECTORIES</title>
+    <title>Socket</title>
+    <script src="https://cdn.socket.io/4.2.0/socket.io.min.js" integrity="sha384-PiBR5S00EtOj2Lto9Uu81cmoyZqR57XcOna1oAuVuIEjzj0wpqDVfD0JA9eXlRsj" crossorigin="anonymous"></script>
 </head>
 <body>
-<ul>
-    ##links
-</ul>
+    <div id="counter"></div>
+<input id="input" type="text" autofocus>
+<button id="button">Send</button>
+<button id="recon">Reconnect User</button>
+<div style="display: flex">
+<div id="eventuser"></div>
+<div id="messages"></div>
+</div>
+<script>
+    const users = ['vasya', 'misha', 'petya', 'grisha', 'masha']
+    const colors = ['red', 'yellow', 'blue', 'brown', 'pinc']
+    var user =''
+
+    const socket = io('localhost:5555');
+    const messageBlock = document.querySelector('#messages');
+    const eventBlock = document.querySelector('#eventuser');
+    const countBlock = document.querySelector('#counter');
+    const sendButton = document.querySelector('#button');
+    const reconnectButton = document.querySelector('#recon');
+
+    const input = document.querySelector('#input');
+
+    socket.on('connect', () => {
+        user = users[Math.floor(Math.random() * users.length)]
+       /*  console.log(`Connected ${user}!`); */
+        socket.emit('client-connect', user)
+    });
+
+    /* socket.on('disconnect'); */
+  
+    //Ивенты на кнопках отправить, переподключиться
+    reconnectButton.addEventListener('click',  () => {
+        socket.emit('reconnect', user);
+        socket.on('server-reconnect', userOnServer => eventBlock.insertAdjacentHTML('beforeend', `<div > ${userOnServer} reconnect</div>`))
+    });
+    //Отправка сообщений
+    sendButton.addEventListener('click',  () => {
+        const data = {
+            message: input.value,
+            author: user,
+            color: colors[users.indexOf(user)]
+        };
+        socket.emit('client-msg', data);
+        input.value = '';
+    });
+
+    socket.on('server-msg', payload => {
+        console.log(payload)
+        messageBlock.insertAdjacentHTML('beforeend', `<div style="color: ${payload.color}"> ${payload.author}: ${payload.message}</div>`)
+    });
+    socket.on('server-user-connect', userOnServer => {
+        eventBlock.insertAdjacentHTML('beforeend', `<div > ${userOnServer} connect</div>`)
+    });
+    socket.on('server-user-disconnect', (userOnServer) => {
+        eventBlock.insertAdjacentHTML('beforeend', `<div > ${userOnServer} disconnected</div>`)
+    });
+    socket.on('server-cnt', counterUser => countBlock.insertAdjacentHTML('beforeend', `<div > Количество пользователей ОНЛАЙН: ${counterUser}</div>`) )
+</script>
 </body>
 </html>
